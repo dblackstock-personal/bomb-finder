@@ -11,22 +11,28 @@ class Space {
 
 //we need to generate a grid of these spaces, which can be an array of arrays.
 //numbered top-left to bottom-right.
-const space1 = new Space();
-const space2 = new Space();
-const space3 = new Space();
-const space4 = new Space();
-const space5 = new Space();
-const space6 = new Space();
-const space7 = new Space();
-const space8 = new Space();
-const space9 = new Space();
-const space10 = new Space();
-const space11 = new Space();
-const space12 = new Space();
-const space13 = new Space();
-const space14 = new Space();
-const space15 = new Space();
-const space16 = new Space();
+// const space1 = new Space();
+// const space2 = new Space();
+// const space3 = new Space();
+// const space4 = new Space();
+// const space5 = new Space();
+// const space6 = new Space();
+// const space7 = new Space();
+// const space8 = new Space();
+// const space9 = new Space();
+// const space10 = new Space();
+// const space11 = new Space();
+// const space12 = new Space();
+// const space13 = new Space();
+// const space14 = new Space();
+// const space15 = new Space();
+// const space16 = new Space();
+
+const spaces = [];
+
+for (let index = 0; index < 16; index++) {
+    spaces.push(new Space());
+}
 
 let activePlayField;
 let numberOfBombs = 2;
@@ -35,27 +41,29 @@ let gameOver = false; //to let the game know when to stop checking the win condi
 // 1, 2, 3
 // 4, 5, 6
 // 7, 8, 9
-let playField9 = [[space1, space4, space7], [space2, space5, space8], [space3, space6, space9]];
+// let playField9 = [[space1, space4, space7], [space2, space5, space8], [space3, space6, space9]];
+let playField9 = [[spaces[0], spaces[3], spaces[6]], [spaces[1], spaces[4], spaces[7]], [spaces[2], spaces[5], spaces[8]]];
 
 
 // 1,  2,  3,  4
 // 5,  6,  7,  8
 // 9,  10, 11, 12
 // 13, 14, 15, 16
-let playField16 = [[space1, space5, space9, space13], [space2, space6, space10, space14], [space3, space7, space11, space15], [space4, space8, space12, space16]];
+// let playField16 = [[space1, space5, space9, space13], [space2, space6, space10, space14], [space3, space7, space11, space15], [space4, space8, space12, space16]];
+let playField16 = [[spaces[0], spaces[4], spaces[8], spaces[12]], [spaces[1], spaces[5], spaces[9], spaces[13]], [ spaces[2], spaces[7], spaces[11], spaces[15]], [spaces[3], spaces[7], spaces[11], spaces[15]]];
 
 
 //now we need a way to randomly put a bomb somewhere on this field.
 
-const generateMines = (field, numberOfMines) => {
+const generateBombs = (field, numberOfBombs) => {
 
     //this needs to generate a number from 0 to length-1
     const randomPosition = (array) => {
         return Math.floor(Math.random() * (array.length));
     }
 
-    //loop to fill the board with the correct number of mines
-    for (let index = 0; index < numberOfMines; index++) {
+    //loop to fill the board with the correct number of bombs
+    for (let index = 0; index < numberOfBombs; index++) {
         let randomHoriz = randomPosition(field);
         let randomVert = randomPosition(field[0]);
 
@@ -70,21 +78,16 @@ const generateMines = (field, numberOfMines) => {
             index--;
         }
     }
-
-
-    // console.log(field[randomHoriz][randomVert]);
-
-
 }
 
-//now we need something to generate numbers based on the nearby mines.
+//now we need something to generate numbers based on the nearby bombs.
 
 const generateNumbers = (field) => {
 
-    const countMines = (field, horizontal, vertical) => {
+    const countBombs = (field, horizontal, vertical) => {
 
-        let minesFound = 0;
-        //complicated loops to check how many mines surround the chosen space
+        let bombsFound = 0;
+        //complicated loops to check how many bombs surround the chosen space
         for (let horiz = (horizontal - 1); horiz <= (horizontal + 1); horiz++) {
             if (horiz < 0) { //this covers leftmost
                 horiz = 0;
@@ -101,23 +104,23 @@ const generateNumbers = (field) => {
 
                 //this bit for the actual adding
                 //we don't need to define the case where the loop looks at its own space, because that space will never have a bomb
-                //we only call the function for spaces that aren't mines
+                //we only call the function for spaces that aren't bombs
                 if (field[horiz][vert].content == 'bomb') {
-                    minesFound++;
+                    bombsFound++;
                 }
 
             }
 
         }
-        return minesFound;
+        return bombsFound;
     }
 
-    //iterate over every non-bomb element to run countMines for each of them
+    //iterate over every non-bomb element to run countBombs for each of them
     field.forEach((element, positionHoriz) => {
 
         element.forEach((space, positionVert) => {
             if (space.content != 'bomb') {
-                space.content = countMines(field, positionHoriz, positionVert);
+                space.content = countBombs(field, positionHoriz, positionVert);
             }
         });
 
@@ -133,23 +136,34 @@ const screenBoardSize = document.getElementById("board-size");
 const screenBombNumber = document.getElementById("bomb-number");
 const screenIntroPrompt = document.getElementsByClassName("prompt")[0];
 //for the play screen
-const screenSpace1 = document.getElementsByClassName("space1")[0];
-const screenSpace2 = document.getElementsByClassName("space2")[0];
-const screenSpace3 = document.getElementsByClassName("space3")[0];
-const screenSpace4 = document.getElementsByClassName("space4")[0];
-const screenSpace5 = document.getElementsByClassName("space5")[0];
-const screenSpace6 = document.getElementsByClassName("space6")[0];
-const screenSpace7 = document.getElementsByClassName("space7")[0];
-const screenSpace8 = document.getElementsByClassName("space8")[0];
-const screenSpace9 = document.getElementsByClassName("space9")[0];
-const screenSpace10 = document.getElementsByClassName("space10")[0];
-const screenSpace11 = document.getElementsByClassName("space11")[0];
-const screenSpace12 = document.getElementsByClassName("space12")[0];
-const screenSpace13 = document.getElementsByClassName("space13")[0];
-const screenSpace14 = document.getElementsByClassName("space14")[0];
-const screenSpace15 = document.getElementsByClassName("space15")[0];
-const screenSpace16 = document.getElementsByClassName("space16")[0];
+// const screenSpace1 = document.getElementsByClassName("space1")[0];
+// console.log(screenSpace1);
+// const screenSpace2 = document.getElementsByClassName("space2")[0];
+// const screenSpace3 = document.getElementsByClassName("space3")[0];
+// const screenSpace4 = document.getElementsByClassName("space4")[0];
+// const screenSpace5 = document.getElementsByClassName("space5")[0];
+// const screenSpace6 = document.getElementsByClassName("space6")[0];
+// const screenSpace7 = document.getElementsByClassName("space7")[0];
+// const screenSpace8 = document.getElementsByClassName("space8")[0];
+// const screenSpace9 = document.getElementsByClassName("space9")[0];
+// const screenSpace10 = document.getElementsByClassName("space10")[0];
+// const screenSpace11 = document.getElementsByClassName("space11")[0];
+// const screenSpace12 = document.getElementsByClassName("space12")[0];
+// const screenSpace13 = document.getElementsByClassName("space13")[0];
+// const screenSpace14 = document.getElementsByClassName("space14")[0];
+// const screenSpace15 = document.getElementsByClassName("space15")[0];
+// const screenSpace16 = document.getElementsByClassName("space16")[0];
 const screenHeader = document.getElementsByClassName("status")[0];
+
+let screenSpaces = [];
+
+//this ties screenSpaces[0] to spaces[0] etc.
+
+spaces.forEach(element => {
+    let input = document.getElementsByClassName(`space${screenSpaces.length+1}`)[0];
+    screenSpaces.push(input);
+    console.log(screenSpaces[screenSpaces.length-1]);
+});
 
 //functions for playing
 
@@ -170,7 +184,7 @@ const checkForMine = (screenSpace, space) => {
     }
 }
 
-//a function to check if only the mines remain
+//a function to check if only the bombs remain
 const checkGameWon = (playField) => {
     let fieldClear = true;
 
@@ -264,7 +278,7 @@ screenStart.addEventListener("click", () =>{
     screenBombNumber.style.visibility = 'hidden';
     screenIntroPrompt.style.visibility = 'hidden';
 
-    generateMines(activePlayField, bombNumber);
+    generateBombs(activePlayField, bombNumber);
     generateNumbers(activePlayField);
     console.log(activePlayField);
 
@@ -278,66 +292,74 @@ screenStart.addEventListener("click", () =>{
 //now we need an eventListener for each square.
 //there must be a better way to do this.
 
-screenSpace1.addEventListener("click", function () {
-    checkForMine(this, space1);
+screenSpaces.forEach((element, index) => {
+
+    element.addEventListener("click", function () {
+        checkForMine(this, spaces[element]);
 }, false);
 
-screenSpace2.addEventListener("click", function () {
-    checkForMine(this, space2);
-}, false);
+});
 
-screenSpace3.addEventListener("click", function () {
-    checkForMine(this, space3);
-}, false);
+// screenSpace1.addEventListener("click", function () {
+//     checkForMine(this, space1);
+// }, false);
 
-screenSpace4.addEventListener("click", function () {
-    checkForMine(this, space4);
-}, false);
+// screenSpace2.addEventListener("click", function () {
+//     checkForMine(this, space2);
+// }, false);
 
-screenSpace5.addEventListener("click", function () {
-    checkForMine(this, space5);
-}, false);
+// screenSpace3.addEventListener("click", function () {
+//     checkForMine(this, space3);
+// }, false);
 
-screenSpace6.addEventListener("click", function () {
-    checkForMine(this, space6);
-}, false);
+// screenSpace4.addEventListener("click", function () {
+//     checkForMine(this, space4);
+// }, false);
 
-screenSpace7.addEventListener("click", function () {
-    checkForMine(this, space7);
-}, false);
+// screenSpace5.addEventListener("click", function () {
+//     checkForMine(this, space5);
+// }, false);
 
-screenSpace8.addEventListener("click", function () {
-    checkForMine(this, space8);
-}, false);
+// screenSpace6.addEventListener("click", function () {
+//     checkForMine(this, space6);
+// }, false);
 
-screenSpace9.addEventListener("click", function () {
-    checkForMine(this, space9);
-}, false);
+// screenSpace7.addEventListener("click", function () {
+//     checkForMine(this, space7);
+// }, false);
 
-screenSpace10.addEventListener("click", function () {
-    checkForMine(this, space10);
-}, false);
+// screenSpace8.addEventListener("click", function () {
+//     checkForMine(this, space8);
+// }, false);
 
-screenSpace11.addEventListener("click", function () {
-    checkForMine(this, space11);
-}, false);
+// screenSpace9.addEventListener("click", function () {
+//     checkForMine(this, space9);
+// }, false);
 
-screenSpace12.addEventListener("click", function () {
-    checkForMine(this, space12);
-}, false);
+// screenSpace10.addEventListener("click", function () {
+//     checkForMine(this, space10);
+// }, false);
 
-screenSpace13.addEventListener("click", function () {
-    checkForMine(this, space13);
-}, false);
+// screenSpace11.addEventListener("click", function () {
+//     checkForMine(this, space11);
+// }, false);
 
-screenSpace14.addEventListener("click", function () {
-    checkForMine(this, space14);
-}, false);
+// screenSpace12.addEventListener("click", function () {
+//     checkForMine(this, space12);
+// }, false);
 
-screenSpace15.addEventListener("click", function () {
-    checkForMine(this, space15);
-}, false);
+// screenSpace13.addEventListener("click", function () {
+//     checkForMine(this, space13);
+// }, false);
 
-screenSpace16.addEventListener("click", function () {
-    checkForMine(this, space16);
-}, false);
+// screenSpace14.addEventListener("click", function () {
+//     checkForMine(this, space14);
+// }, false);
+
+// screenSpace15.addEventListener("click", function () {
+//     checkForMine(this, space15);
+// }, false);
+
+// screenSpace16.addEventListener("click", function () {
+//     checkForMine(this, space16);
+// }, false);
