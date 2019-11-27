@@ -4,16 +4,22 @@
     flex-wrap: wrap;
 }
 
-h1, h2{
+h1, h2, #rules, .opening-screen{
     width: 100%;
     text-align: center;
 }
 
-.game{
-    display:flex;
+#rules ol li{
+    text-align: left;
+    padding: 0 10px;
+}
+
+#game{
+    /* display:flex; */
     width:40%;
     flex-wrap: wrap;
     text-align: center;
+    display:none;
 }
 
 .spaces{
@@ -29,11 +35,15 @@ h1, h2{
     padding-bottom: 100%;
 }
 
+.game-button{
+    width: 50%
+}
+
 #start{
     height: 30px;
 }
 
-/* hide everything when the game starts */
-.game-status, .spaces{
-    visibility: hidden;
+/* hides the spaces separately, since we only want to make visible the correct spaces for a given playfield size*/
+.spaces{
+    display: none;
 }

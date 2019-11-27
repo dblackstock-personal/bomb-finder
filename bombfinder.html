@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,35 @@
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="bombfinder_style.css">
 </head>
+
 <body>
     <div class=wrapper>
         <h1>
-            Welcome to Bombfinder, try to not find the bombs
+            Welcome to Bomb Avoider!
         </h1>
-        <div class="openingScreen">
+        <div id="opening-screen">
+            <div id=rules>
+                <h2>Rules:</h2>
+                <ol>
+                    <li>Select spaces one by one to reveal them</li>
+                    <li>Revealed spaces will show the number of bombs next to the space (horizontally, vertically and
+                        diagonally)</li>
+                    <li>Use this information to select all spaces without bombs</li>
+                    <li>If you select a bomb it will explode - Game Over!</li>
+                </ol>
+            </div>
             <h2 class=prompt>Please select a board size and a number of bombs</h2>
+
             <select id=board-size>
                 <option value="9">9 Spaces</option>
                 <option value="16">16 Spaces</option>
             </select>
             <input id=bomb-number type="text">
-            <button id = start type="button">Start</button>
+            <button id=start type="button">Start</button>
         </div>
-        <h2 class=status></h2>
-        <div class=game>
+
+        <div id=game>
+            <h2 class=status></h2>
             <div class="spaces space1">?</div>
             <div class="spaces space2">?</div>
             <div class="spaces space3">?</div>
@@ -39,8 +53,11 @@
             <div class="spaces space14">?</div>
             <div class="spaces space15">?</div>
             <div class="spaces space16">?</div>
+            <button class="game-button restart" type="button">Restart</button>
+            <button class="game-button new-game" type="button">New Game</button>
         </div>
     </div>
     <script src="./scripts/bombfinder.js"></script>
 </body>
+
 </html>

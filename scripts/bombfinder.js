@@ -1,57 +1,61 @@
-//we need a space object which can record what is on the space (bomb, number, blank)
+//we need a space object which can record what is on the space (bomb, number, error)
 //and its status (unclicked, revealed, flagged)
 //this should be enough information to draw the screen.
 
 class Space {
     constructor() {
-        this.content = 'blank';
+        this.content = 'error'; //this should never be seen by the player
         this.status = 'hidden';
     }
 }
 
 //we need to generate a grid of these spaces, which can be an array of arrays.
 //numbered top-left to bottom-right.
-// const space1 = new Space();
-// const space2 = new Space();
-// const space3 = new Space();
-// const space4 = new Space();
-// const space5 = new Space();
-// const space6 = new Space();
-// const space7 = new Space();
-// const space8 = new Space();
-// const space9 = new Space();
-// const space10 = new Space();
-// const space11 = new Space();
-// const space12 = new Space();
-// const space13 = new Space();
-// const space14 = new Space();
-// const space15 = new Space();
-// const space16 = new Space();
 
-const spaces = [];
+let spaces = [];
+let screenSpaces = [];
 
-for (let index = 0; index < 16; index++) {
-    spaces.push(new Space());
+const newSpaces = () => {
+    spaces = [];
+    screenSpaces = [];
+    for (let index = 0; index < 16; index++) {
+        spaces.push(new Space());
+    }
+
+    //this ties screenSpaces[0] to spaces[0], creating a screen element for each space named e.g. 'space1' 'space2'
+    spaces.forEach(element => {
+        let input = document.getElementsByClassName(`space${screenSpaces.length + 1}`)[0];
+        screenSpaces.push(input);
+    });
+
+    screenSpaces.forEach(element => {
+        element.textContent = '?';
+    });
 }
 
+//we define these here so that they can be reached by things like the Restart button
 let activePlayField;
-let numberOfBombs = 2;
+let bombNumber;
+let screenSize;
 let gameOver = false; //to let the game know when to stop checking the win condition
+let playField9;
+let playField16;
 
-// 1, 2, 3
-// 4, 5, 6
-// 7, 8, 9
-// let playField9 = [[space1, space4, space7], [space2, space5, space8], [space3, space6, space9]];
-let playField9 = [[spaces[0], spaces[3], spaces[6]], [spaces[1], spaces[4], spaces[7]], [spaces[2], spaces[5], spaces[8]]];
+const newPlayFields = () => {
+    // 1, 2, 3
+    // 4, 5, 6
+    // 7, 8, 9
+    playField9 = [[spaces[0], spaces[3], spaces[6]], [spaces[1], spaces[4], spaces[7]], [spaces[2], spaces[5], spaces[8]]];
 
+    // 1,  2,  3,  4
+    // 5,  6,  7,  8
+    // 9,  10, 11, 12
+    // 13, 14, 15, 16
+    playField16 = [[spaces[0], spaces[4], spaces[8], spaces[12]], [spaces[1], spaces[5], spaces[9], spaces[13]], [spaces[2], spaces[7], spaces[11], spaces[15]], [spaces[3], spaces[7], spaces[11], spaces[15]]];
+}
 
-// 1,  2,  3,  4
-// 5,  6,  7,  8
-// 9,  10, 11, 12
-// 13, 14, 15, 16
-// let playField16 = [[space1, space5, space9, space13], [space2, space6, space10, space14], [space3, space7, space11, space15], [space4, space8, space12, space16]];
-let playField16 = [[spaces[0], spaces[4], spaces[8], spaces[12]], [spaces[1], spaces[5], spaces[9], spaces[13]], [ spaces[2], spaces[7], spaces[11], spaces[15]], [spaces[3], spaces[7], spaces[11], spaces[15]]];
-
+newSpaces();
+newPlayFields();
 
 //now we need a way to randomly put a bomb somewhere on this field.
 
@@ -131,39 +135,17 @@ const generateNumbers = (field) => {
 
 
 //stuff for the intro screen
+const screenIntroScreen = document.getElementById("opening-screen");
 const screenStart = document.getElementById("start");
 const screenBoardSize = document.getElementById("board-size");
 const screenBombNumber = document.getElementById("bomb-number");
 const screenIntroPrompt = document.getElementsByClassName("prompt")[0];
+const screenRules = document.getElementById("rules");
 //for the play screen
-// const screenSpace1 = document.getElementsByClassName("space1")[0];
-// console.log(screenSpace1);
-// const screenSpace2 = document.getElementsByClassName("space2")[0];
-// const screenSpace3 = document.getElementsByClassName("space3")[0];
-// const screenSpace4 = document.getElementsByClassName("space4")[0];
-// const screenSpace5 = document.getElementsByClassName("space5")[0];
-// const screenSpace6 = document.getElementsByClassName("space6")[0];
-// const screenSpace7 = document.getElementsByClassName("space7")[0];
-// const screenSpace8 = document.getElementsByClassName("space8")[0];
-// const screenSpace9 = document.getElementsByClassName("space9")[0];
-// const screenSpace10 = document.getElementsByClassName("space10")[0];
-// const screenSpace11 = document.getElementsByClassName("space11")[0];
-// const screenSpace12 = document.getElementsByClassName("space12")[0];
-// const screenSpace13 = document.getElementsByClassName("space13")[0];
-// const screenSpace14 = document.getElementsByClassName("space14")[0];
-// const screenSpace15 = document.getElementsByClassName("space15")[0];
-// const screenSpace16 = document.getElementsByClassName("space16")[0];
+const screenGame = document.getElementById("game");
 const screenHeader = document.getElementsByClassName("status")[0];
-
-let screenSpaces = [];
-
-//this ties screenSpaces[0] to spaces[0] etc.
-
-spaces.forEach(element => {
-    let input = document.getElementsByClassName(`space${screenSpaces.length+1}`)[0];
-    screenSpaces.push(input);
-    console.log(screenSpaces[screenSpaces.length-1]);
-});
+const screenRestartButton = document.getElementsByClassName("restart")[0];
+const screenNewGameButton = document.getElementsByClassName("new-game")[0];
 
 //functions for playing
 
@@ -178,8 +160,8 @@ const checkForMine = (screenSpace, space) => {
         }
         space.status = 'revealed';
 
-        if (!gameOver){
-        checkGameWon(activePlayField);
+        if (!gameOver) {
+            checkGameWon(activePlayField);
         }
     }
 }
@@ -198,168 +180,112 @@ const checkGameWon = (playField) => {
 
     });
 
-    if (fieldClear == true){
+    if (fieldClear == true) {
         screenHeader.textContent = "CONGRATULATIONS ALL BOMBS HAVE BEEN NOT FOUND";
     }
 }
 
+//function to clear the field and hide the spaces, ready for it to be regenerated
+const clearField = (playField) => {
+
+    console.log(playField);
+    playField.forEach(matrix => {
+        matrix.forEach(space => {
+            space = new Space();
+        })
+    });
+
+    // console.log(activePlayField);
+    // for (let index = 0; index < 16; index++) {
+    //     playField[index].content = "error";
+    //     playField[index].status = "hidden";
+    // }
+}
+
 //eventListener to start the game based on user's choice of settings
 
-screenStart.addEventListener("click", () =>{
-    let screenSize = screenBoardSize.value
-    let bombNumber = Number(screenBombNumber.value);
+screenStart.addEventListener("click", () => {
+    screenSize = screenBoardSize.value
+    bombNumber = Number(screenBombNumber.value);
     let bombPrompt = 'Please enter a number of bombs less than or equal to the board size';
     let spaceWidth;
 
-    console.log(Number.isInteger(bombNumber));
-    console.log(bombNumber >= 0);
-    console.log(bombNumber <= screenSize);
+    //all this is to check the user input of bombNumber is valid
+    if (Number.isInteger(bombNumber) && bombNumber >= 0 && bombNumber <= screenSize) {
+    }
+    else {
+        screenIntroPrompt.textContent = bombPrompt;
+        return;
+    }
 
-    //all this is to check the bombNumber input is valid
- if (Number.isInteger(bombNumber) && bombNumber >= 0 && bombNumber <= screenSize){
-        }
-        else{
-            screenIntroPrompt.textContent = bombPrompt;
-            return;
-        }
-
-    if (screenSize == '9'){
+    //if statements to cope with rendering a 9-size or a 16-size playfield
+    if (screenSize == '9') {
         activePlayField = playField9;
         spaceWidth = '30%';
-    } else if(screenSize== '16'){
+    } else if (screenSize == '16') {
         activePlayField = playField16;
-
-        screenSpace10.style.visibility = 'visible';
-        screenSpace11.style.visibility = 'visible';
-        screenSpace12.style.visibility = 'visible';
-        screenSpace13.style.visibility = 'visible';
-        screenSpace14.style.visibility = 'visible';
-        screenSpace15.style.visibility = 'visible';
-        screenSpace16.style.visibility = 'visible';
-
         spaceWidth = '21%';
 
-        screenSpace10.style.width = spaceWidth;
-        screenSpace11.style.width = spaceWidth;
-        screenSpace12.style.width = spaceWidth;
-        screenSpace13.style.width = spaceWidth;
-        screenSpace14.style.width = spaceWidth;
-        screenSpace15.style.width = spaceWidth;
-        screenSpace16.style.width = spaceWidth;
-    } else{
+        //this for loop sets spaces 10 to 16 to visible and with correct width
+        for (let index = 9; index < 16; index++) {
+            screenSpaces[index].style.display = 'block';
+            screenSpaces[index].style.width = spaceWidth;
+        }
+
+    } else {
         screenIntroPrompt.textContent = 'Please enter a value for board size';
         return;
     }
 
-    //TODO link screenSpaces to Space objects, so that we can iterate over the playfield array to set these values
-    screenSpace1.style.visibility = 'visible';
-    screenSpace2.style.visibility = 'visible';
-    screenSpace3.style.visibility = 'visible';
-    screenSpace4.style.visibility = 'visible';
-    screenSpace5.style.visibility = 'visible';
-    screenSpace6.style.visibility = 'visible';
-    screenSpace7.style.visibility = 'visible';
-    screenSpace8.style.visibility = 'visible';
-    screenSpace9.style.visibility = 'visible';
-    screenHeader.style.visibility = 'visible';
 
-    screenSpace1.style.width = spaceWidth;
-    screenSpace2.style.width = spaceWidth;
-    screenSpace3.style.width = spaceWidth;
-    screenSpace4.style.width = spaceWidth;
-    screenSpace5.style.width = spaceWidth;
-    screenSpace6.style.width = spaceWidth;
-    screenSpace7.style.width = spaceWidth;
-    screenSpace8.style.width = spaceWidth;
-    screenSpace9.style.width = spaceWidth;
+    //this for loop sets spaces 0 to 9 to visible and with correct width
+    for (let index = 0; index < 9; index++) {
+        screenSpaces[index].style.display = 'block';
+        screenSpaces[index].style.width = spaceWidth;
+    }
 
-    screenStart.style.visibility = 'hidden';
-    screenBoardSize.style.visibility = 'hidden';
-    screenBombNumber.style.visibility = 'hidden';
-    screenIntroPrompt.style.visibility = 'hidden';
+    screenGame.style.display = 'flex';
+    screenIntroScreen.style.display = 'none';
+
+    // screenRules.style.display = 'none';
 
     generateBombs(activePlayField, bombNumber);
     generateNumbers(activePlayField);
     console.log(activePlayField);
 
-    //now to make the field visible
-
-
     screenHeader.textContent = `There are ${bombNumber} bombs on the field...`;
 
 });
 
-//now we need an eventListener for each square.
-//there must be a better way to do this.
+//creates an eventListener for each space element
 
 screenSpaces.forEach((element, index) => {
 
     element.addEventListener("click", function () {
-        checkForMine(this, spaces[element]);
-}, false);
+        console.log(spaces[index])
+        checkForMine(this, spaces[index]);
+    }, false);
 
 });
 
-// screenSpace1.addEventListener("click", function () {
-//     checkForMine(this, space1);
-// }, false);
+//eventListeners for the buttons
 
-// screenSpace2.addEventListener("click", function () {
-//     checkForMine(this, space2);
-// }, false);
+//restart needs to repopulate bombs and set playspaces to unclicked
+screenRestartButton.addEventListener("click", () => {
+    clearField(activePlayField);
+    generateBombs(activePlayField, bombNumber);
+    generateNumbers(activePlayField);
+});
 
-// screenSpace3.addEventListener("click", function () {
-//     checkForMine(this, space3);
-// }, false);
+//new game returns user to intro menu
+screenNewGameButton.addEventListener("click", () => {
+    screenGame.style.display = 'none';
+    screenIntroScreen.style.display = 'block';
+    newSpaces();
+    newPlayFields();
+    activePlayField = '';
+    // console.log(spaces);
+    // console.log(activePlayField);
 
-// screenSpace4.addEventListener("click", function () {
-//     checkForMine(this, space4);
-// }, false);
-
-// screenSpace5.addEventListener("click", function () {
-//     checkForMine(this, space5);
-// }, false);
-
-// screenSpace6.addEventListener("click", function () {
-//     checkForMine(this, space6);
-// }, false);
-
-// screenSpace7.addEventListener("click", function () {
-//     checkForMine(this, space7);
-// }, false);
-
-// screenSpace8.addEventListener("click", function () {
-//     checkForMine(this, space8);
-// }, false);
-
-// screenSpace9.addEventListener("click", function () {
-//     checkForMine(this, space9);
-// }, false);
-
-// screenSpace10.addEventListener("click", function () {
-//     checkForMine(this, space10);
-// }, false);
-
-// screenSpace11.addEventListener("click", function () {
-//     checkForMine(this, space11);
-// }, false);
-
-// screenSpace12.addEventListener("click", function () {
-//     checkForMine(this, space12);
-// }, false);
-
-// screenSpace13.addEventListener("click", function () {
-//     checkForMine(this, space13);
-// }, false);
-
-// screenSpace14.addEventListener("click", function () {
-//     checkForMine(this, space14);
-// }, false);
-
-// screenSpace15.addEventListener("click", function () {
-//     checkForMine(this, space15);
-// }, false);
-
-// screenSpace16.addEventListener("click", function () {
-//     checkForMine(this, space16);
-// }, false);
+    //I created newSpaces, newPlayFields and clearField in order to reset the field but none work.
+});
