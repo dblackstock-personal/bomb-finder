@@ -151,8 +151,8 @@ const screenNewGameButton = document.getElementsByClassName("new-game")[0];
 
 //a function to check a square to find a bomb
 const checkForMine = (screenSpace, space) => {
+    console.log(`when we click on the space it's linked to screenSpace ${screenSpace.textContent} and space ${space.content}. spaces[7] has content ${spaces[7].content}`)
     if (space.status == "hidden") {
-        // console.log(space.content);
         screenSpace.textContent = `${space.content}`;
         if (space.content == "bomb") {
             screenHeader.textContent = "THE GAME IS OVER, A BOMB WAS FOUND";
@@ -181,32 +181,28 @@ const checkGameWon = (playField) => {
     });
 
     if (fieldClear == true) {
-        screenHeader.textContent = "CONGRATULATIONS ALL BOMBS HAVE BEEN NOT FOUND";
+        screenHeader.textContent = "CONGRATULATIONS ALL BOMBS HAVE BEEN AVOIDED";
     }
 }
 
 //function to clear the field and hide the spaces, ready for it to be regenerated
-const clearField = (playField) => {
+// const clearField = (playField) => {
 
-    console.log(playField);
-    playField.forEach(matrix => {
-        matrix.forEach(space => {
-            space = new Space();
-        })
-    });
+//     console.log(playField);
+//     playField.forEach(matrix => {
+//         matrix.forEach(space => {
+//             space = new Space();
+//         })
+//     });
 
     // console.log(activePlayField);
     // for (let index = 0; index < 16; index++) {
     //     playField[index].content = "error";
     //     playField[index].status = "hidden";
     // }
-}
 
-//eventListener to start the game based on user's choice of settings
-
-screenStart.addEventListener("click", () => {
-    screenSize = screenBoardSize.value
-    bombNumber = Number(screenBombNumber.value);
+    //breaks out the code for creating the play field so that it can be called on initial start or restart
+const createPlayField = () => {
     let bombPrompt = 'Please enter a number of bombs less than or equal to the board size';
     let spaceWidth;
 
@@ -254,6 +250,15 @@ screenStart.addEventListener("click", () => {
     console.log(activePlayField);
 
     screenHeader.textContent = `There are ${bombNumber} bombs on the field...`;
+}
+
+
+//eventListener to start the game based on user's choice of settings
+
+screenStart.addEventListener("click", () => {
+    screenSize = screenBoardSize.value
+    bombNumber = Number(screenBombNumber.value);
+    createPlayField();
 
 });
 
@@ -272,9 +277,10 @@ screenSpaces.forEach((element, index) => {
 
 //restart needs to repopulate bombs and set playspaces to unclicked
 screenRestartButton.addEventListener("click", () => {
-    clearField(activePlayField);
-    generateBombs(activePlayField, bombNumber);
-    generateNumbers(activePlayField);
+    newSpaces();
+    newPlayFields();
+    createPlayField();
+    gameOver = false;
 });
 
 //new game returns user to intro menu
@@ -283,9 +289,6 @@ screenNewGameButton.addEventListener("click", () => {
     screenIntroScreen.style.display = 'block';
     newSpaces();
     newPlayFields();
-    activePlayField = '';
-    // console.log(spaces);
-    // console.log(activePlayField);
+    gameOver = false;
 
-    //I created newSpaces, newPlayFields and clearField in order to reset the field but none work.
 });
