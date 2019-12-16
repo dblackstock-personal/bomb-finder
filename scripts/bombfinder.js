@@ -51,7 +51,7 @@ const newPlayFields = () => {
     // 5,  6,  7,  8
     // 9,  10, 11, 12
     // 13, 14, 15, 16
-    playField16 = [[spaces[0], spaces[4], spaces[8], spaces[12]], [spaces[1], spaces[5], spaces[9], spaces[13]], [spaces[2], spaces[7], spaces[11], spaces[15]], [spaces[3], spaces[7], spaces[11], spaces[15]]];
+    playField16 = [[spaces[0], spaces[4], spaces[8], spaces[12]], [spaces[1], spaces[5], spaces[9], spaces[13]], [spaces[2], spaces[6], spaces[10], spaces[14]], [spaces[3], spaces[7], spaces[11], spaces[15]]];
 }
 
 newSpaces();
@@ -76,9 +76,7 @@ const generateBombs = (field, numberOfBombs) => {
         //if it's already got a bomb in it, don't put a bomb here!
         if (space.content != 'bomb') {
             space.content = 'bomb';
-            console.log('here1');
         } else {
-            console.log('here2');
             index--;
         }
     }
@@ -151,7 +149,6 @@ const screenNewGameButton = document.getElementsByClassName("new-game")[0];
 
 //a function to check a square to find a bomb
 const checkForMine = (screenSpace, space) => {
-    console.log(`when we click on the space it's linked to screenSpace ${screenSpace.textContent} and space ${space.content}. spaces[7] has content ${spaces[7].content}`)
     if (space.status == "hidden") {
         screenSpace.textContent = `${space.content}`;
         if (space.content == "bomb") {
@@ -184,22 +181,6 @@ const checkGameWon = (playField) => {
         screenHeader.textContent = "CONGRATULATIONS ALL BOMBS HAVE BEEN AVOIDED";
     }
 }
-
-//function to clear the field and hide the spaces, ready for it to be regenerated
-// const clearField = (playField) => {
-
-//     console.log(playField);
-//     playField.forEach(matrix => {
-//         matrix.forEach(space => {
-//             space = new Space();
-//         })
-//     });
-
-    // console.log(activePlayField);
-    // for (let index = 0; index < 16; index++) {
-    //     playField[index].content = "error";
-    //     playField[index].status = "hidden";
-    // }
 
     //breaks out the code for creating the play field so that it can be called on initial start or restart
 const createPlayField = () => {
@@ -247,7 +228,6 @@ const createPlayField = () => {
 
     generateBombs(activePlayField, bombNumber);
     generateNumbers(activePlayField);
-    console.log(activePlayField);
 
     screenHeader.textContent = `There are ${bombNumber} bombs on the field...`;
 }
@@ -267,7 +247,6 @@ screenStart.addEventListener("click", () => {
 screenSpaces.forEach((element, index) => {
 
     element.addEventListener("click", function () {
-        console.log(spaces[index])
         checkForMine(this, spaces[index]);
     }, false);
 
